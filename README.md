@@ -11,7 +11,17 @@ Super barebones and straightforward, most of the work is handled by the dependen
     $ pip install -r requirements.txt
 
 ## Usage
-    $ python geohash_choropleth.py input_data.csv
+    $ cat sample_input.csv
+    geohash,foozles,wozzles
+    9q8zj,100,0
+    9q8zn,29,20
+    9q8yv,101,30
+    9q8yy,51,40
+    9q8yt,85,50
+    9q8yw,28,100
+    $ python geohash_choropleth.py sample_input.csv
+    $ cd output
+    $ open foozles_map.html wozzles_map.html
 
 ## Output
 By default, this script outputs maps to an `output/` directory it creates in the working directory.
