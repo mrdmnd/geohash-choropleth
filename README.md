@@ -11,7 +11,7 @@ Super barebones and straightforward, most of the work is handled by the dependen
     $ pip install -r requirements.txt
 
 ## Usage
-    $ python geohash_chloropleth.py input_data.csv
+    $ python geohash_choropleth.py input_data.csv
 
 ## Output
 By default, this script outputs maps to an `output/` directory it creates in the working directory.
