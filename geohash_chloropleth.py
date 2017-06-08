@@ -1,7 +1,6 @@
 import pandas as pd
 import folium
 import click
-import tempfile
 import os
 
 
@@ -76,27 +75,40 @@ def construct_geojson(geohashes):
 
 
 @click.command()
-@click.argument('input_filepath', type=click.Path(exists=True))
-@click.argument('output_dir', type=click.Path())
-def main(input_filepath, output_dir):
-    df = pd.read_csv(input_filepath)
-    geojson = construct_geojson(df['geohash'])
-    data_columns = df.columns.values.tolist()
+@click.argument('input', type=click.Path(exists=True))
+@click.option('output', default='./output', type=click.Path())
+def main(input, output):
 
-    if not os.path.exists(output_dir):
-        os.makedirs(output_dir)
-    with open(os.path.join(output_dir, 'geohashes.json'), 'w') as geojson_file:
+    if not os.path.exists(output):
+        os.makedirs(output)
+
+    # Load dataset in memory, then build a representation of the geojson features.
+    df = pd.read_csv(input)
+    geojson = construct_geojson(df['geohash'])
+
+    # The choropleth method on the folium map requires a PATH, not an in-memory representation.
+    # Write out in-memory representation to `$output_dir/geohashes.json`
+    with open(os.path.join(output, 'geohashes.json'), 'w') as geojson_file:
         geojson_file.write(geojson)
 
-    for column in data_columns[1:]:
-        folium_map = folium.Map(location=[48, -102], zoom_start=7, tiles='Stamen Terrain')
-        folium_map.choropleth(geo_path='geopath.json', data=df,
-                columns=['geohash', column]
+    # For each metric column that isn't "geohash" in the input file,
+    # Render a choropleth diagram for that metric.
+    for column in df.columns.values.tolist():
+        if column == "geohash":
+            continue
+        folium_map = folium.Map(
+                location=decode_exactly(df['geohash'][0])[0:2],
+                zoom_start=8,
+                tiles='Stamen Terrain')
+        folium_map.choropleth(
+                geo_path=os.path.join(output, 'geohashes.json'),
+                data=df,
+                columns=['geohash', column],
                 key_on='feature.id',
                 fill_color='PuRd', fill_opacity=0.7, line_opacity=0.2,
-                legend_name='Geohash Choropleth by {0}'.format(column))
+                legend_name='Geohash Choropleth by {0}'.format(column.to_uppercase()))
 
-        folium_map.save(os.path.join(output_dir, '%s_map.html'%column))
+        folium_map.save(os.path.join(output, '%s_map.html' % column))
 
 
 
