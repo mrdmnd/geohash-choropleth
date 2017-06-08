@@ -3,7 +3,6 @@ import folium
 import click
 import os
 
-
 __base32 = '0123456789bcdefghjkmnpqrstuvwxyz'
 __decodemap = { }
 for i in range(len(__base32)):
@@ -62,7 +61,6 @@ def generate_feature(geohash):
 \t}}""".format(geohash, a, b, c, d)
 
 def construct_geojson(geohashes):
-
     """
     Turn a sequence of geohash tiles into a geojson FeatureCollection object.
     """
@@ -76,9 +74,8 @@ def construct_geojson(geohashes):
 
 @click.command()
 @click.argument('input', type=click.Path(exists=True))
-@click.option('output', default='./output', type=click.Path())
+@click.option('--output', default='./output', type=click.Path())
 def main(input, output):
-
     if not os.path.exists(output):
         os.makedirs(output)
 
@@ -98,18 +95,20 @@ def main(input, output):
             continue
         folium_map = folium.Map(
                 location=decode_exactly(df['geohash'][0])[0:2],
-                zoom_start=8,
-                tiles='Stamen Terrain')
+                zoom_start=8
+                #tiles='Stamen Terrain'
+        )
         folium_map.choropleth(
                 geo_path=os.path.join(output, 'geohashes.json'),
                 data=df,
                 columns=['geohash', column],
                 key_on='feature.id',
                 fill_color='PuRd', fill_opacity=0.7, line_opacity=0.2,
-                legend_name='Geohash Choropleth by {0}'.format(column.to_uppercase()))
+                legend_name='Geohash Choropleth by {0}'.format(column)
+        )
 
         folium_map.save(os.path.join(output, '%s_map.html' % column))
-
+    print("Done processing input. Output can be found in {0} directory.".format(output))
 
 
 if __name__ == "__main__":

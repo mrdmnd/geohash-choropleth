@@ -1,3 +1,4 @@
 folium
 pandas
 requests
+six
