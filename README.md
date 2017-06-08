@@ -23,5 +23,7 @@ Super barebones and straightforward, most of the work is handled by the dependen
     $ cd output
     $ open foozles_map.html wozzles_map.html
 
+[Example Choropleth](https://dl.dropbox.com/s/ngketn518fzz9sw/Screenshot%202017-06-08%2014.13.54.png?dl=0)
+
 ## Output
 By default, this script outputs maps to an `output/` directory it creates in the working directory.
